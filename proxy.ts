@@ -9,7 +9,7 @@ export function proxy(request: NextRequest) {
 
   const isProtectedPath = 
     pathname === '/' || 
-    pathname.startsWith('/chat') || 
+    pathname.startsWith('/minerva') || 
     pathname.startsWith('/settings');
 
   // Logic: Block unauthenticated users
@@ -26,5 +26,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/chat/:path*', '/settings/:path*', '/connect'],
+  matcher: ['/', '/minerva/:path*', '/settings/:path*', '/connect'],
 };
