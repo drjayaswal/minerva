@@ -9,9 +9,10 @@ import {
   Cancel01Icon,
   Brain01Icon,
 } from "@hugeicons/core-free-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -24,6 +25,12 @@ export default function Navbar() {
     { name: "Minerva", icon: Brain01Icon, path: "/minerva" },
   ];
 
+  useEffect(() => {
+    const hasSession = document.cookie.includes("session=");
+    setIsAuthenticated(hasSession);
+  }, [usePathname()]);
+
+  if (!isAuthenticated) return null;
   return (
     <>
       <button
@@ -41,7 +48,7 @@ export default function Navbar() {
         }`}
       />
       <aside
-        className={`fixed top-0 right-0 h-screen w-[260px] z-50 rounded-l-4xl
+        className={`fixed top-0 right-0 h-screen w-65 z-50 rounded-l-4xl
         transition-transform duration-500 ease-out
         ${open ? "translate-x-0" : "translate-x-full"}
         bg-white text-accent shadow-2xl`}
@@ -49,7 +56,12 @@ export default function Navbar() {
         <div className="flex items-center justify-between pl-8 pb-4 pr-6 pt-6">
           <div className="text-3xl text-accent">Menu</div>
           <button className="p-1 cursor-pointer" onClick={() => setOpen(false)}>
-            <HugeiconsIcon icon={Cancel01Icon} size={20} strokeWidth={2} className="hover:text-red-600"/>
+            <HugeiconsIcon
+              icon={Cancel01Icon}
+              size={20}
+              strokeWidth={2}
+              className="hover:text-red-600"
+            />
           </button>
         </div>
         <div className="flex flex-col gap-2 px-4 py-2">

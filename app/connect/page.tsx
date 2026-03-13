@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowRight01Icon, Loading03Icon } from "@hugeicons/core-free-icons";
+import { ArrowRight01Icon, Loading03Icon, ViewIcon, ViewOffSlashIcon } from "@hugeicons/core-free-icons";
 
 export const getBaseUrl = () =>
   process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
@@ -13,6 +13,7 @@ export default function Connect() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,7 +52,7 @@ export default function Connect() {
         <div className="max-w-xl flex flex-col justify-center items-center space-y-6">
           <div className="text-8xl text-white">Minerva</div>
 
-          <form onSubmit={handleSubmit} className="space-y-2 font-bold">
+          <form onSubmit={handleSubmit} className="space-y-2 font-bold w-full">
             <input
               type="email"
               required
@@ -62,14 +63,23 @@ export default function Connect() {
               onChange={(e) => setEmail(e.target.value)}
             />
 
-            <input
-              type="password"
-              required
-              className="w-full px-4 py-3 text-white placeholder:text-white/50 focus:placeholder:text-white rounded-xl outline-none transition-all duration-300"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative w-full">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                className="w-full px-4 py-3 text-white placeholder:text-white/50 focus:placeholder:text-white rounded-xl outline-none transition-all duration-300 pr-12"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 text-white/50 hover:text-white transition-colors"
+              >
+                <HugeiconsIcon icon={showPassword ? ViewOffSlashIcon : ViewIcon} size={20} />
+              </button>
+            </div>
 
             <button
               disabled={loading}
