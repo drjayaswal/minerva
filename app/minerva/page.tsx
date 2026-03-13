@@ -13,7 +13,7 @@ import {
   Clock02Icon,
   Cancel01Icon,
   ArrowLeft01Icon,
-CheckmarkCircle01Icon
+  CheckmarkCircle01Icon,
 } from "@hugeicons/core-free-icons";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -21,6 +21,7 @@ import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
 import { useStore } from "../store/useStore";
 import { getBaseUrl } from "../connect/page";
+import { getAuthHeaders } from "@/lib/utils";
 
 const CodeBlock = ({ inline, className, children }: any) => {
   if (inline)
@@ -72,7 +73,7 @@ const CodeBlock = ({ inline, className, children }: any) => {
   );
 };
 
-export default function Chat() {
+export default function Minerva() {
   const {
     conversations,
     currentId,
@@ -113,7 +114,7 @@ export default function Chat() {
     setIsRefreshing(true);
     try {
       const res = await fetch(`${getBaseUrl()}/chat/conversations`, {
-        credentials: "include",
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
@@ -138,7 +139,7 @@ export default function Chat() {
 
     try {
       const res = await fetch(`${getBaseUrl()}/chat/${id}/messages`, {
-        credentials: "include",
+        headers: getAuthHeaders(),
       });
 
       const data = await res.json();
@@ -159,8 +160,10 @@ export default function Chat() {
     try {
       const res = await fetch(`${getBaseUrl()}/chat/conversations/new`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...getAuthHeaders(),
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ title: titleInput }),
       });
 
@@ -215,8 +218,10 @@ export default function Chat() {
     try {
       const res = await fetch(`${getBaseUrl()}/chat/${currentId}`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...getAuthHeaders(),
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ prompt: userText }),
       });
 
@@ -325,7 +330,7 @@ export default function Chat() {
               onClick={handleCreateNew}
               className="p-2 text-accent absolute top-1/4 left-4 hover:bg-accent hover:text-white transition-colors duration-300 rounded-4xl cursor-pointer"
             >
-  <HugeiconsIcon
+              <HugeiconsIcon
                 icon={CheckmarkCircle01Icon}
                 size={16}
                 strokeWidth={2}
@@ -346,21 +351,13 @@ export default function Chat() {
                     : "hover:bg-gray-100"
                 }`}
               >
-                <HugeiconsIcon
-                  icon={Clock02Icon}
-                  size={14}
-                  strokeWidth={2}
-                />
+                <HugeiconsIcon icon={Clock02Icon} size={14} strokeWidth={2} />
                 {c.title}
               </button>
             ))
           ) : (
             <div className="w-full border-t text-left px-7 py-2 pt-4 flex items-center gap-2 text-sm text-gray-400">
-              <HugeiconsIcon
-                icon={Clock02Icon}
-                size={14}
-                strokeWidth={2}
-              />
+              <HugeiconsIcon icon={Clock02Icon} size={14} strokeWidth={2} />
               No Conversations
             </div>
           )}
@@ -429,8 +426,11 @@ export default function Chat() {
           )}
           {!isLoading && (
             <>
-            {conversations.length <= 0 ||
-              <p className="sm:text-8xl text-4xl text-center text-accent">Minerva</p>}
+              {conversations.length <= 0 || (
+                <p className="sm:text-8xl text-4xl text-center text-accent">
+                  Minerva
+                </p>
+              )}
               {messages.map((msg: any, i: number) => (
                 <motion.div
                   key={msg.id || i}

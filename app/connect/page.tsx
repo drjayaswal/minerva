@@ -16,34 +16,37 @@ export default function Connect() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const response = await fetch(`${getBaseUrl()}/auth/connect`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
+const handleSubmit = async (e: React.SubmitEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const response = await fetch(`${getBaseUrl()}/auth/connect`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-      const json_response = await response.json();
-      const data = json_response.data;
+    const json_response = await response.json();
+    
+    if (!json_response.success) throw new Error(json_response.detail || "Login failed");
 
-      if (!json_response.success) throw new Error(json_response.detail);
+    const { token, email: userEmail } = json_response.data;
 
-      toast.success(json_response.message);
-      localStorage.setItem("user_email", data.email);
-      
-      setTimeout(() => {
-        router.push("/");
-      }, 1000);
-    } catch (error: any) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    localStorage.setItem("token", token);
+    
+    document.cookie = "is_logged_in=true; path=/; max-age=86400; SameSite=Lax";
+
+    toast.success(json_response.message);
+    
+    setTimeout(() => {
+      router.push("/");
+    }, 1000);
+  } catch (error: any) {
+    toast.error(error.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
