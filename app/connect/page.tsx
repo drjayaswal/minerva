@@ -24,6 +24,7 @@ export default function Connect() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
 
       const json_response = await response.json();
@@ -32,7 +33,6 @@ export default function Connect() {
       if (!json_response.success) throw new Error(json_response.detail);
 
       toast.success(json_response.message);
-      document.cookie = `session=${data.token}; path=/; max-age=86400; SameSite=None; Secure`;
       localStorage.setItem("user_email", data.email);
       
       setTimeout(() => {
