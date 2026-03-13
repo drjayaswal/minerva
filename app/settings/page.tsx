@@ -2,42 +2,50 @@
 
 import { useRouter } from "next/navigation";
 import { useStore } from "../store/useStore";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { 
+  Database01Icon, 
+  MessageEdit01Icon, 
+  Delete02Icon, 
+} from "@hugeicons/core-free-icons";
 
 export default function Settings() {
-  const { user, logout } = useStore();
-  const router = useRouter();
-
-  const handleLogout = () => {
-    logout();
-    document.cookie = "session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-    router.push("/connect");
+  const { conversations, setCurrentId } = useStore();
+  const handleClearData = () => {
+    localStorage.removeItem("lithium-storage");
+    window.location.reload();
   };
 
-  if (!user) {
-    return <div className="text-white p-6">Loading user settings...</div>;
-  }
-
   return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
-      
-      <div className="bg-neutral-900 rounded-2xl p-6 border border-neutral-800 space-y-6 max-w-lg">
-        <div>
-          <h3 className="text-neutral-400 text-sm font-medium">Email Address</h3>
-          <p className="text-lg">{user.email}</p>
-        </div>
+    <div className="min-h-screen bg-accent text-white p-6 sm:p-10 flex flex-col items-center">
+      <div className="w-full max-w-lg">
+        <h1 className="text-4xl font-medium mb-8">Settings</h1>
         
-        <div>
-          <h3 className="text-neutral-400 text-sm font-medium">User ID</h3>
-          <p className="text-lg font-mono text-neutral-300">{user.id}</p>
-        </div>
+        <div className="bg-white/5 backdrop-blur-md rounded-[32px] p-6 border border-white/10 space-y-6">
+          <div className="flex items-center gap-4 p-4 bg-white rounded-2xl">
+            <HugeiconsIcon icon={MessageEdit01Icon} size={32} className="text-accent" />
+            <div>
+              <h3 className="text-accent text-xs uppercase tracking-wider font-bold">Total Conversations</h3>
+              <p className="text-lg text-accent font-medium">{conversations.length} saved</p>
+            </div>
+          </div>
 
-        <button 
-          onClick={handleLogout}
-          className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition-all"
-        >
-          Logout and Clear Data
-        </button>
+          <div className="flex items-center gap-4 p-4 bg-white rounded-2xl">
+            <HugeiconsIcon icon={Database01Icon} size={32} className="text-accent" />
+            <div>
+              <h3 className="text-accent text-xs uppercase tracking-wider font-bold">Storage State</h3>
+              <p className="text-sm text-accent">Local persistent storage is active</p>
+            </div>
+          </div>
+
+          <button 
+            onClick={handleClearData}
+            className="w-full py-4 text-white rounded-2xl font-bold transition-all hover:bg-rose-600/80 hover:text-white cursor-pointer flex items-center justify-center gap-2"
+          >
+            <HugeiconsIcon icon={Delete02Icon} size={20} />
+            Clear All Data
+          </button>
+        </div>
       </div>
     </div>
   );
