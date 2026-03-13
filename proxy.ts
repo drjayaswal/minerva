@@ -5,6 +5,8 @@ import type { NextRequest } from 'next/server';
 export function proxy(request: NextRequest) {
   // Access the session cookie
   const session = request.cookies.get('session')?.value;
+  console.log("Session", request.cookies.get('session')?.value);
+  console.log("Middleware detected cookies:", request.cookies.getAll());
   const { pathname } = request.nextUrl;
 
   const isProtectedPath = 
