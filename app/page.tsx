@@ -64,7 +64,7 @@ export default function HomePage() {
         <div className="flex items-center justify-center font-bold w-full px-2">
           <div className="flex flex-row rounded-full overflow-hidden border-2 border-white w-auto">
             <button
-              onClick={() => router.push("/chat")}
+              onClick={() => router.push("/minerva")}
               className="group relative overflow-hidden cursor-pointer text-white px-4 sm:px-8 py-3 sm:py-4
               flex items-center justify-center transition-all duration-500 ease-in-out hover:text-accent"
             >
