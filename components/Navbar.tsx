@@ -18,6 +18,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const isHome = pathname === "/";
+  const isSettings = pathname === "/settings";
 
   const navItems = [
     { name: "Home", icon: Home04Icon, path: "/" },
@@ -37,7 +38,7 @@ export default function Navbar() {
       <button
         onClick={() => setOpen(true)}
         className={`fixed top-2 right-2 z-50 p-2 rounded-xl transition cursor-pointer ${
-          isHome ? "bg-white text-accent" : "bg-accent text-white"
+          isHome || isSettings ? "bg-white/20 text-white" : "bg-accent/20 text-accent"
         }`}
       >
         <HugeiconsIcon icon={Menu01Icon} size={22} strokeWidth={2} />

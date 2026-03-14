@@ -9,55 +9,51 @@ export default function HomePage() {
   const router = useRouter();
   const { showToast } = useToast();
 
-const disconnect = () => {
-  showToast({
-    type: "info",
-    message: "Want to Disconnect?",
-    actionLabel: "Disconnect",
-    onAction: () => {
-      localStorage.removeItem("token");
-      document.cookie = "is_logged_in=; path=/; max-age=0; SameSite=Lax";
-      showToast({
-        type: "success",
-        message: "Disconnected successfully",
-      });
-      
-      router.push("/connect");
-    },
-  });
-};
+  const disconnect = () => {
+    showToast({
+      type: "info",
+      message: "Want to Disconnect?",
+      actionLabel: "Disconnect",
+      onAction: () => {
+        localStorage.removeItem("token");
+        document.cookie = "is_logged_in=; path=/; max-age=0; SameSite=Lax";
+        showToast({
+          type: "success",
+          message: "Disconnected successfully",
+        });
+
+        router.push("/connect");
+      },
+    });
+  };
 
   return (
     <div className="min-h-screen bg-accent text-white flex flex-col items-center justify-center p-4 sm:p-6 text-center overflow-hidden">
       <div className="w-full max-w-4xl flex flex-col justify-center items-center space-y-8 sm:space-y-12">
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
-          <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 flex items-center justify-center">
-             <svg 
-              viewBox="0 0 500 500" 
-              className="w-full h-full scale-125 sm:scale-150 md:scale-200"
-            >
-              <defs>
-                <path
-                  id="petal"
-                  d="M250 250 C420 200 420 300 250 350 C80 300 80 200 250 250"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+          <svg viewBox="0 0 500 500" className="w-30 scale-150 h-30">
+            <defs>
+              <ellipse
+                id="petal16"
+                cx="340"
+                cy="250"
+                rx="90"
+                ry="28"
+                fill="none"
+                stroke="white"
+                strokeWidth="8"
+              />
+            </defs>
+            <g>
+              {[...Array(16)].map((_, i) => (
+                <use
+                  key={i}
+                  href="#petal16"
+                  transform={`rotate(${i * 22.5} 250 250)`}
                 />
-              </defs>
-              <g>
-                {[...Array(8)].map((_, i) => (
-                  <use
-                    key={i}
-                    href="#petal"
-                    transform={`rotate(${i * 45} 250 250)`}
-                  />
-                ))}
-              </g>
-            </svg>
-          </div>
+              ))}
+            </g>
+          </svg>
           <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-medium tracking-tight text-white">
             Minerva
           </h1>
@@ -71,13 +67,17 @@ const disconnect = () => {
             >
               <div className="absolute inset-y-0 left-0 w-0 bg-white transition-all duration-500 ease-in-out group-hover:w-full" />
               <span className="flex items-center gap-2 relative z-10 text-xs sm:text-base whitespace-nowrap">
-                Get Started 
-                <HugeiconsIcon icon={ArrowRight01Icon} size={18} strokeWidth={2} />
+                Get Started
+                <HugeiconsIcon
+                  icon={ArrowRight01Icon}
+                  size={18}
+                  strokeWidth={2}
+                />
               </span>
             </button>
-            
+
             <div className="w-0.5 bg-white shrink-0"></div>
-            
+
             <button
               onClick={disconnect}
               className="group relative overflow-hidden cursor-pointer text-white px-4 sm:px-8 py-3 sm:py-4
@@ -91,7 +91,6 @@ const disconnect = () => {
             </button>
           </div>
         </div>
-
       </div>
     </div>
   );

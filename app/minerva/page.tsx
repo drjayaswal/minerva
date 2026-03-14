@@ -24,6 +24,7 @@ import { getBaseUrl } from "../connect/page";
 import { formatMessageTime, getAuthHeaders } from "@/lib/utils";
 import { useToast } from "@/components/Toast";
 import { SpeakButton } from "@/components/Speaker";
+import FlowerLoader from "@/components/Flower";
 
 export const CodeBlock = ({ inline, className, children }: any) => {
   if (inline)
@@ -73,7 +74,8 @@ export default function Minerva() {
     setMessages,
     createNewConversation,
   } = useStore();
-
+  const [activeMessageIndex, setActiveMessageIndex] = useState(0);
+  const messageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
@@ -244,7 +246,28 @@ export default function Minerva() {
       setIsThinking(false);
     }
   };
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
 
+    const onScroll = () => {
+      const containerTop = container.getBoundingClientRect().top;
+      let closest = 0;
+      let closestDist = Infinity;
+      messageRefs.current.forEach((el, i) => {
+        if (!el) return;
+        const dist = Math.abs(el.getBoundingClientRect().top - containerTop);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closest = i;
+        }
+      });
+      setActiveMessageIndex(closest);
+    };
+
+    container.addEventListener("scroll", onScroll);
+    return () => container.removeEventListener("scroll", onScroll);
+  }, [messages]);
   useEffect(() => {
     if (initializedRef.current) return;
     initializedRef.current = true;
@@ -327,30 +350,14 @@ export default function Minerva() {
   if (isAppLoading) {
     return (
       <div className="h-screen w-screen bg-accent">
-        <div className="flex flex-col h-screen items-center justify-center font-bold animate-pulse text-white">
-          <svg viewBox="0 0 500 500" className="w-20 scale-200 h-20">
-            <defs>
-              <path
-                id="petal"
-                d="M250 250 C420 200 420 300 250 350 C80 300 80 200 250 250"
-                fill="none"
-                stroke="white"
-                strokeWidth="6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </defs>
-            <g>
-              {[...Array(8)].map((_, i) => (
-                <use
-                  key={i}
-                  href="#petal"
-                  transform={`rotate(${i * 45} 250 250)`}
-                />
-              ))}
-            </g>
-          </svg>
-          {/* <p className="text-xl text-white">Minerva</p> */}
+        <div className="flex flex-col h-screen items-center justify-center text-white">
+          <FlowerLoader
+            size="w-30 h-30"
+            stepMs={80}
+            pauseMs={50}
+            petalWidth={4}
+          />
+          <p className="text-3xl font-medium">Minerva</p>
         </div>
       </div>
     );
@@ -454,7 +461,7 @@ export default function Minerva() {
               <button
                 key={c.id}
                 onClick={() => loadChat(c.id)}
-                className={`w-full text-left px-4 py-3 font-bold mb-2 cursor-pointer rounded-xl flex items-center gap-2 text-sm ${
+                className={`w-full text-left px-4 py-3 font-bold mb-2 cursor-pointer rounded-2xl flex items-center gap-2 text-sm ${
                   currentId === c.id
                     ? "bg-accent text-white"
                     : "bg-white hover:bg-accent/15 text-accent"
@@ -490,95 +497,78 @@ export default function Minerva() {
         </div>
       </aside>
 
-      <div className="flex flex-col bg-white flex-1 min-w-0">
+      <div className="flex flex-col bg-white flex-1 min-w-0 relative">
         <div
           ref={scrollRef}
           className="flex-1 overflow-y-auto sm:px-5 sm:py-8 p-4 space-y-4 w-full mx-auto"
         >
           {!hasConversations && !isChatAreaLoading && (
             <div className="flex flex-col h-full items-center justify-center text-gray-400">
-              <svg viewBox="0 0 500 500" className="w-20 h-20">
+              <svg viewBox="0 0 500 500" className="sm:w-30 w-20 h-20 sm:h-30">
                 <defs>
-                  <path
-                    id="petal"
-                    d="M250 250 C420 200 420 300 250 350 C80 300 80 200 250 250"
+                  <ellipse
+                    id="petal16"
+                    cx="340"
+                    cy="250"
+                    rx="90"
+                    ry="28"
                     fill="none"
                     stroke="#685AFF"
                     strokeWidth="6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
                   />
                 </defs>
                 <g>
-                  {[...Array(8)].map((_, i) => (
+                  {[...Array(16)].map((_, i) => (
                     <use
                       key={i}
-                      href="#petal"
-                      transform={`rotate(${i * 45} 250 250)`}
+                      href="#petal16"
+                      transform={`rotate(${i * 22.5} 250 250)`}
                     />
                   ))}
                 </g>
               </svg>
-              <p className="text-xl text-accent">Minerva</p>
-              <p className="mt-2 text-sm">Start or Select a conversation</p>
+              <p className="sm:text-3xl text-xl text-accent">Minerva</p>
+              <p className="sm:text-xl text-sm">
+                Start Your First Conversation
+              </p>
             </div>
           )}
 
           {isChatAreaLoading && (
             <div className="flex flex-col h-full items-center justify-center text-gray-400">
-              <svg viewBox="0 0 500 500" className="w-16 h-16 animate-spin">
-                <defs>
-                  <path
-                    id="petal-loading"
-                    d="M250 250 C420 200 420 300 250 350 C80 300 80 200 250 250"
-                    fill="none"
-                    stroke="#685AFF"
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </defs>
-                <g>
-                  {[...Array(8)].map((_, i) => (
-                    <use
-                      key={i}
-                      href="#petal-loading"
-                      transform={`rotate(${i * 45} 250 250)`}
-                    />
-                  ))}
-                </g>
-              </svg>
+              <FlowerLoader stepMs={80} pauseMs={400} petalWidth={4} />
             </div>
           )}
 
           {!isChatAreaLoading && hasConversations && (
             <>
               {!hasMessages && (
-                <div className="flex h-full gap-4 items-center justify-center">
-                  <svg viewBox="0 0 500 500" className="w-20 scale-200 h-20">
-                    <defs>
-                      <path
-                        id="petal-empty"
-                        d="M250 250 C420 200 420 300 250 350 C80 300 80 200 250 250"
-                        fill="none"
-                        stroke="#685AFF"
-                        strokeWidth="6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </defs>
-                    <g>
-                      {[...Array(8)].map((_, i) => (
-                        <use
-                          key={i}
-                          href="#petal-empty"
-                          transform={`rotate(${i * 45} 250 250)`}
-                        />
-                      ))}
-                    </g>
-                  </svg>
+                <div className="flex sm:flex-row flex-col h-full items-center justify-center">
+                      <svg viewBox="0 0 500 500" className="sm:w-40 w-30 h-30 sm:h-40">
+                <defs>
+                  <ellipse
+                    id="petal16"
+                    cx="340"
+                    cy="250"
+                    rx="90"
+                    ry="28"
+                    fill="none"
+                    stroke="#685AFF"
+                    strokeWidth="8"
+                  />
+                </defs>
+                <g>
+                  {[...Array(16)].map((_, i) => (
+                    <use
+                      key={i}
+                      href="#petal16"
+                      transform={`rotate(${i * 22.5} 250 250)`}
+                    />
+                  ))}
+                </g>
+              </svg>
                   <div className="flex flex-col items-center">
-                    <p className="sm:text-8xl text-4xl text-center text-accent">
+                    <p className="sm:text-7xl text-3xl text-center text-accent">
                       Minerva
                     </p>
                   </div>
@@ -587,15 +577,12 @@ export default function Minerva() {
 
               {hasMessages && (
                 <>
-                  <div className="flex flex-col items-center">
-                    <p className="sm:text-8xl text-4xl text-center text-accent">
-                      Minerva
-                    </p>
-                  </div>
-
                   {messages.map((msg: any, i: number) => (
                     <motion.div
                       key={msg.id || i}
+                      ref={(el) => {
+                        messageRefs.current[i] = el;
+                      }}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       className={`flex items-start ${
@@ -605,27 +592,25 @@ export default function Minerva() {
                       }`}
                     >
                       {msg.role === "assistant" && (
-                        <svg
-                          viewBox="0 0 500 500"
-                          className="w-8 h-8 sm:w-10 sm:h-10"
-                        >
+                        <svg viewBox="0 0 500 500" className="w-10 h-10">
                           <defs>
-                            <path
-                              id="petal-chat"
-                              d="M250 250 C420 200 420 300 250 350 C80 300 80 200 250 250"
+                            <ellipse
+                              id="petal16"
+                              cx="340"
+                              cy="250"
+                              rx="90"
+                              ry="28"
                               fill="none"
                               stroke="#685AFF"
                               strokeWidth="8"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
                             />
                           </defs>
                           <g>
-                            {[...Array(8)].map((_, i) => (
+                            {[...Array(16)].map((_, i) => (
                               <use
                                 key={i}
-                                href="#petal-chat"
-                                transform={`rotate(${i * 45} 250 250)`}
+                                href="#petal16"
+                                transform={`rotate(${i * 22.5} 250 250)`}
                               />
                             ))}
                           </g>
@@ -633,13 +618,13 @@ export default function Minerva() {
                       )}
                       <div className="flex flex-col gap-1 w-full">
                         <div
-                          className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                          className={`flex ${msg.role === "user" ? "justify-end mt-10" : "justify-start"}`}
                         >
                           <div
                             className={
                               msg.role === "user"
-                                ? "rounded-2xl text-sm bg-accent text-white font-bold px-4 py-3 shadow-sm"
-                                : "text-sm text-black p-2.5 prose prose-sm max-w-full prose-headings:text-black prose-headings:font-bold prose-headings:mt-3 prose-headings:mb-1 prose-p:text-black prose-p:my-1 prose-li:text-black prose-li:my-0 prose-ul:my-1 prose-strong:text-black prose-code:text-accent prose-table:text-black prose-th:bg-accent/10 prose-th:text-accent prose-td:border prose-td:border-gray-200 prose-th:border prose-th:border-gray-200 prose-hr:border-gray-200"
+                                ? "rounded-2xl text-sm bg-accent/20 text-accent font-bold px-4 py-3 shadow-inner"
+                                : "text-sm sm:mt-5 mt-0 sm:border-t sm:border-gray-200 text-black p-2.5 prose prose-sm max-w-full prose-headings:text-black prose-headings:font-bold prose-headings:mt-3 prose-headings:mb-1 prose-p:text-black prose-p:my-1 prose-li:text-black prose-li:my-0 prose-ul:my-1 prose-strong:text-black prose-code:text-accent prose-table:text-black prose-th:bg-accent/10 prose-th:text-accent prose-td:border prose-td:border-gray-200 prose-th:border prose-th:border-gray-200 prose-hr:border-gray-200"
                             }
                           >
                             {msg.role === "assistant" && msg.isStreaming ? (
@@ -664,7 +649,7 @@ export default function Minerva() {
                         </div>
                         {msg.role === "user" && (
                           <span
-                            className={`text-[10px] text-black font-medium px-1 ${msg.role === "user" ? "text-right" : "text-left"}`}
+                            className={`text-[10px] py-1 text-black font-medium px-1 ${msg.role === "user" ? "text-right" : "text-left"}`}
                           >
                             {formatMessageTime(msg.created_at)}
                           </span>
@@ -672,7 +657,7 @@ export default function Minerva() {
                         {msg.role === "assistant" && (
                           <div className="flex gap-1 w-full">
                             <span
-                              className={`text-[10px] text-black font-medium px-1 ${msg.role === "user" ? "text-right" : "text-left"}`}
+                              className={`text-[10px] py-1.5 text-black font-medium px-1 ${msg.role === "user" ? "text-right" : "text-left"}`}
                             >
                               {formatMessageTime(msg.created_at)}
                             </span>
@@ -688,31 +673,13 @@ export default function Minerva() {
 
               {isThinking && (
                 <div className="flex items-center gap-2">
-                  <svg
-                    viewBox="0 0 500 500"
-                    className="w-8 h-8 sm:w-10 sm:h-10 animate-spin"
-                  >
-                    <defs>
-                      <path
-                        id="petal-thinking"
-                        d="M250 250 C420 200 420 300 250 350 C80 300 80 200 250 250"
-                        fill="none"
-                        stroke="#685AFF"
-                        strokeWidth="8"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </defs>
-                    <g>
-                      {[...Array(8)].map((_, i) => (
-                        <use
-                          key={i}
-                          href="#petal-thinking"
-                          transform={`rotate(${i * 45} 250 250)`}
-                        />
-                      ))}
-                    </g>
-                  </svg>
+                  <FlowerLoader
+                    stepMs={80}
+                    size="w-10 h-10"
+                    pauseMs={400}
+                    petalWidth={8}
+                    petalColor="#685AFF"
+                  />
                   <div className="text-black font-bold animate-pulse">
                     Thinking...
                   </div>
@@ -721,10 +688,31 @@ export default function Minerva() {
             </>
           )}
         </div>
+        {hasMessages && !isChatAreaLoading && (
+          <div className="absolute left-1 top-1/2 -translate-y-1/2 flex no-scrollbar overflow-y-auto flex-col gap-1 z-10">
+            {messages.map((_: any, i: number) => (
+              <button
+                key={i}
+                onClick={() => {
+                  messageRefs.current[i]?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                  setActiveMessageIndex(i);
+                }}
+                className={`block w-10 h-1 rounded-full transition-all cursor-pointer duration-200 ${
+                  activeMessageIndex === i
+                    ? "bg-accent"
+                    : "bg-accent/25 hover:bg-accent/50"
+                }`}
+              />
+            ))}
+          </div>
+        )}
         {conversations.length > 0 && (
           <form
             onSubmit={handleSend}
-            className="sm:p-5 p-3 pb-0 bg-white border-t flex gap-2 items-center"
+            className="p-5 bg-white border-t flex gap-2 items-center"
           >
             <button
               type="button"

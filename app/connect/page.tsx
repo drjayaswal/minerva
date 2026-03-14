@@ -54,9 +54,34 @@ export default function Connect() {
     <div className="min-h-svh w-full flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-sm mx-auto">
         <div className="flex flex-col justify-center items-center space-y-8 sm:space-y-10">
-          <div className="text-6xl sm:text-7xl lg:text-8xl text-white tracking-tighter select-none">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
+          <svg viewBox="0 0 500 500" className="w-30 scale-150 h-30">
+            <defs>
+              <ellipse
+                id="petal16"
+                cx="340"
+                cy="250"
+                rx="90"
+                ry="28"
+                fill="none"
+                stroke="white"
+                strokeWidth="8"
+              />
+            </defs>
+            <g>
+              {[...Array(16)].map((_, i) => (
+                <use
+                  key={i}
+                  href="#petal16"
+                  transform={`rotate(${i * 22.5} 250 250)`}
+                />
+              ))}
+            </g>
+          </svg>
+          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-medium tracking-tight text-white">
             Minerva
-          </div>
+          </h1>
+        </div>
 
           <form onSubmit={handleSubmit} className="space-y-3 font-bold w-full">
             <input

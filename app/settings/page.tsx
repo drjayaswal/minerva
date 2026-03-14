@@ -4,7 +4,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Database01Icon,
   MessageEdit01Icon,
-  Loading03Icon,
   AlertCircleIcon,
   CheckmarkCircle01Icon,
   InformationCircleIcon,
@@ -171,7 +170,7 @@ export default function Settings() {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [showConvList, setShowConvList] = useState(false);
 
-  const STORAGE_LIMIT_KB = 2048;
+  const STORAGE_LIMIT_KB = 512;
 
   useEffect(() => {
     setHydrated(true);
@@ -226,7 +225,6 @@ export default function Settings() {
               <>
                 <SkeletonCard />
                 <SkeletonCard />
-                <div className="w-full h-14 bg-white/5 rounded-2xl animate-pulse" />
               </>
             ) : (
               <>
