@@ -1,12 +1,23 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
 body {
 font-family: var(--font-raleway), sans-serif;
 }
+
+.prose table { @apply w-full text-sm border-collapse overflow-hidden; }
+.prose thead { @apply bg-accent text-white; }
+.prose th { @apply px-4 py-2.5 text-left text-xs font-bold uppercase tracking-wider text-white; }
+.prose td { @apply px-4 py-2.5 text-black/80; }
+.prose tr { @apply border-b border-black/5; }
+.prose tr:nth-child(even) td { @apply bg-accent/5; }
+.prose tr:last-child { @apply border-b-0; }
+.prose tbody tr:hover td { @apply bg-accent/10 transition-colors duration-150; }
+.prose table { @apply shadow-sm ring-1 ring-black/5; }
 
 @theme inline {
 --color-background: var(--background);

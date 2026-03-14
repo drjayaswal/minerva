@@ -54,7 +54,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${raleway.variable} ${geistMono.variable}`}
     >
-      <body className="antialiased min-h-screen flex flex-col bg-accent text-white selection:bg-white selection:text-[#685AFF]">
+      <body className="antialiased min-h-screen flex flex-col bg-accent text-white selection:bg-accent selection:text-white">
         <Navbar />
         <ToastProvider>
           <main className="flex-1 w-full overflow-hidden">{children}</main>

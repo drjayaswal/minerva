@@ -26,11 +26,12 @@ export default function Navbar() {
   ];
 
   useEffect(() => {
-    const hasSession = document.cookie.includes("session=");
+    const hasSession = document.cookie.includes("is_logged_in=true");
     setIsAuthenticated(hasSession);
-  }, [usePathname()]);
+  }, [pathname]);
 
   if (!isAuthenticated) return null;
+  
   return (
     <>
       <button

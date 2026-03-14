@@ -9,22 +9,23 @@ export default function HomePage() {
   const router = useRouter();
   const { showToast } = useToast();
 
-  const disconnect = () => {
-    showToast({
-      type: "info",
-      message: "You will be disconnected",
-      actionLabel: "Disconnect",
-      onAction: () => {
-        document.cookie =
-          "session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-        showToast({
-          type: "success",
-          message: "Disconnected successfully",
-        });
-        router.push("/connect");
-      },
-    });
-  };
+const disconnect = () => {
+  showToast({
+    type: "info",
+    message: "Want to Disconnect?",
+    actionLabel: "Disconnect",
+    onAction: () => {
+      localStorage.removeItem("token");
+      document.cookie = "is_logged_in=; path=/; max-age=0; SameSite=Lax";
+      showToast({
+        type: "success",
+        message: "Disconnected successfully",
+      });
+      
+      router.push("/connect");
+    },
+  });
+};
 
   return (
     <div className="min-h-screen bg-accent text-white flex flex-col items-center justify-center p-4 sm:p-6 text-center overflow-hidden">

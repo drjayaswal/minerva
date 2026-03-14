@@ -4,7 +4,12 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowRight01Icon, Loading03Icon, ViewIcon, ViewOffSlashIcon } from "@hugeicons/core-free-icons";
+import {
+  ArrowRight01Icon,
+  Loading03Icon,
+  ViewIcon,
+  ViewOffSlashIcon,
+} from "@hugeicons/core-free-icons";
 
 export const getBaseUrl = () =>
   process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
@@ -16,50 +21,49 @@ export default function Connect() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-const handleSubmit = async (e: React.SubmitEvent) => {
-  e.preventDefault();
-  setLoading(true);
-  try {
-    const response = await fetch(`${getBaseUrl()}/auth/connect`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await fetch(`${getBaseUrl()}/auth/connect`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const json_response = await response.json();
-    
-    if (!json_response.success) throw new Error(json_response.detail || "Login failed");
+      const json_response = await response.json();
 
-    const { token, email: userEmail } = json_response.data;
+      if (!json_response.success)
+        throw new Error(json_response.detail || "Login failed");
 
-    localStorage.setItem("token", token);
-    
-    document.cookie = "is_logged_in=true; path=/; max-age=86400; SameSite=Lax";
+      const { token } = json_response.data;
 
-    toast.success(json_response.message);
-    
-    setTimeout(() => {
+      localStorage.setItem("token", token);
+      document.cookie = "is_logged_in=true; path=/; max-age=86400; SameSite=Lax";
+
+      toast.success(json_response.message);
       router.push("/");
-    }, 1000);
-  } catch (error: any) {
-    toast.error(error.message);
-  } finally {
-    setLoading(false);
-  }
-};
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="w-full max-w-[320px]">
-        <div className="max-w-xl flex flex-col justify-center items-center space-y-6">
-          <div className="text-8xl text-white">Minerva</div>
+    <div className="min-h-svh w-full flex items-center justify-center p-4 sm:p-6 lg:p-8">
+      <div className="w-full max-w-sm mx-auto">
+        <div className="flex flex-col justify-center items-center space-y-8 sm:space-y-10">
+          <div className="text-6xl sm:text-7xl lg:text-8xl text-white tracking-tighter select-none">
+            Minerva
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-2 font-bold w-full">
+          <form onSubmit={handleSubmit} className="space-y-3 font-bold w-full">
             <input
               type="email"
               required
               autoFocus
-              className="w-full px-4 py-3 text-white placeholder:text-white/50 focus:placeholder:text-white rounded-xl outline-none transition-all duration-300"
+              className="w-full px-4 py-3 text-white placeholder:text-white/50 focus:placeholder:text-white rounded-xl outline-none transition-all duration-300 bg-white/5 focus:bg-white/10"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -69,7 +73,7 @@ const handleSubmit = async (e: React.SubmitEvent) => {
               <input
                 type={showPassword ? "text" : "password"}
                 required
-                className="w-full px-4 py-3 text-white placeholder:text-white/50 focus:placeholder:text-white rounded-xl outline-none transition-all duration-300 pr-12"
+                className="w-full px-4 py-3 text-white placeholder:text-white/50 focus:placeholder:text-white rounded-xl outline-none transition-all duration-300 pr-12 bg-white/5 focus:bg-white/10"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -77,53 +81,58 @@ const handleSubmit = async (e: React.SubmitEvent) => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3 text-white/50 hover:text-white transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors cursor-pointer"
               >
-                <HugeiconsIcon icon={showPassword ? ViewOffSlashIcon : ViewIcon} size={20} />
+                <HugeiconsIcon
+                  icon={showPassword ? ViewOffSlashIcon : ViewIcon}
+                  size={20}
+                />
               </button>
             </div>
 
-            <button
-              disabled={loading}
-              className={`group relative overflow-hidden rounded-4xl text-white font-bold px-5 py-3
-              flex items-center gap-3 mx-auto transition-all duration-500 ease-in-out
-              ${
-                loading
-                  ? "opacity-70 cursor-not-allowed"
-                  : "cursor-pointer hover:text-accent hover:scale-[1.02]"
-              }`}
-            >
-              <div
-                className={`absolute inset-0 bg-white transition-all duration-500 ease-out
-                ${loading ? "w-0" : "w-0 group-hover:w-full"}`}
-              />
-
-              <span
-                className={`relative z-10 flex items-center gap-2 transition-transform duration-300
-                ${loading ? "" : "group-hover:translate-x-1"}`}
+            <div className="pt-4 flex justify-center">
+              <button
+                disabled={loading}
+                className={`group relative overflow-hidden rounded-full text-white font-bold px-8 py-3
+                flex items-center gap-3 transition-all duration-500 ease-in-out
+                ${
+                  loading
+                    ? "opacity-70 cursor-not-allowed"
+                    : "cursor-pointer hover:text-accent hover:scale-[1.02] active:scale-95"
+                }`}
               >
-                {loading ? (
-                  <>
-                    <HugeiconsIcon
-                      icon={Loading03Icon}
-                      size={20}
-                      strokeWidth={2}
-                      className="animate-spin"
-                    />
-                    Connecting...
-                  </>
-                ) : (
-                  <>
-                    Connect
-                    <HugeiconsIcon
-                      icon={ArrowRight01Icon}
-                      size={20}
-                      strokeWidth={2}
-                    />
-                  </>
-                )}
-              </span>
-            </button>
+                <div
+                  className={`absolute inset-0 bg-white transition-all duration-500 ease-out
+                  ${loading ? "w-0" : "w-0 group-hover:w-full"}`}
+                />
+
+                <span
+                  className={`relative z-10 flex items-center gap-2 transition-transform duration-300
+                  ${loading ? "" : "group-hover:translate-x-1"}`}
+                >
+                  {loading ? (
+                    <>
+                      <HugeiconsIcon
+                        icon={Loading03Icon}
+                        size={20}
+                        strokeWidth={2}
+                        className="animate-spin"
+                      />
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      Connect
+                      <HugeiconsIcon
+                        icon={ArrowRight01Icon}
+                        size={20}
+                        strokeWidth={2}
+                      />
+                    </>
+                  )}
+                </span>
+              </button>
+            </div>
           </form>
         </div>
       </div>
