@@ -8,8 +8,15 @@ import {
   CheckmarkCircle01Icon,
   InformationCircleIcon,
   Cancel01Icon,
+  ArrowLeft01Icon,
+  UserAccountIcon,
 } from "@hugeicons/core-free-icons";
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { Logout01Icon } from "@hugeicons/core-free-icons";
+import { toast } from "sonner";
+import { getAuthHeaders } from "@/lib/utils";
+import { getBaseUrl } from "../connect/page";
 
 type ToastType = "success" | "error" | "info";
 
@@ -103,13 +110,12 @@ function StorageBar({ usedKB, totalKB }: { usedKB: number; totalKB: number }) {
       </div>
       <div className="w-full h-1.5 bg-accent/10 rounded-full overflow-hidden">
         <div
-          className={`h-full rounded-full transition-all duration-700 ${
-            isHigh
-              ? "bg-rose-500"
-              : isMed
+          className={`h-full rounded-full transition-all duration-700 ${isHigh
+            ? "bg-rose-500"
+            : isMed
               ? "bg-amber-400"
               : "bg-emerald-400"
-          }`}
+            }`}
           style={{ width: `${percent}%` }}
         />
       </div>
@@ -153,9 +159,8 @@ function ConversationList({
         >
           {expanded
             ? "Show less"
-            : `+${conversations.length - 3} more conversation${
-                conversations.length - 3 !== 1 ? "s" : ""
-              }`}
+            : `+${conversations.length - 3} more conversation${conversations.length - 3 !== 1 ? "s" : ""
+            }`}
         </button>
       )}
     </div>
@@ -164,6 +169,21 @@ function ConversationList({
 
 export default function Settings() {
   const { conversations } = useStore();
+  const [isAdmin, setIsAdmin] = useState(false)
+  const router = useRouter();
+  const disconnect = () => {
+    toast.info("Want to Disconnect?", {
+      action: {
+        label: "Disconnect",
+        onClick: () => {
+          localStorage.removeItem("token");
+          document.cookie = "is_logged_in=; path=/; max-age=0; SameSite=Lax";
+          toast.success("Disconnected successfully");
+          router.push("/connect");
+        }
+      },
+    });
+  };
 
   const [hydrated, setHydrated] = useState(false);
   const [storageKB, setStorageKB] = useState(0);
@@ -173,6 +193,14 @@ export default function Settings() {
   const STORAGE_LIMIT_KB = 512;
 
   useEffect(() => {
+    const isAdmin = async () => {
+      const res = await fetch(`${getBaseUrl()}/admin/verify`, {
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      setIsAdmin(data.data);
+    }
+    isAdmin();
     setHydrated(true);
   }, []);
 
@@ -198,9 +226,9 @@ export default function Settings() {
 
   const totalMessages = hydrated
     ? conversations.reduce(
-        (acc, conv) => acc + (conv.messages?.length || 0),
-        0
-      )
+      (acc, conv) => acc + (conv.messages?.length || 0),
+      0
+    )
     : 0;
 
   const hasConversations = hydrated && conversations.length > 0;
@@ -219,7 +247,7 @@ export default function Settings() {
         <div className="w-full max-w-lg">
           <h1 className="text-4xl font-medium mb-8">Settings</h1>
 
-          <div className="bg-white/10 backdrop-blur-md rounded-[32px] p-6 space-y-6">
+          <div className="bg-white/5 backdrop-blur-md rounded-[32px] p-6 space-y-6">
 
             {!hydrated ? (
               <>
@@ -229,11 +257,10 @@ export default function Settings() {
             ) : (
               <>
                 <div
-                  className={`flex items-center gap-4 p-4 bg-white rounded-2xl transition-all ${
-                    hasConversations
-                      ? "cursor-pointer hover:bg-white/90 active:scale-[0.98]"
-                      : ""
-                  }`}
+                  className={`flex items-center gap-4 p-4 bg-white rounded-2xl transition-all ${hasConversations
+                    ? "cursor-pointer hover:bg-white/90 active:scale-[0.98]"
+                    : ""
+                    }`}
                   onClick={() =>
                     hasConversations && setShowConvList((p) => !p)
                   }
@@ -271,9 +298,8 @@ export default function Settings() {
                       strokeWidth="2.5"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className={`w-4 h-4 text-accent/40 shrink-0 transition-transform duration-300 ${
-                        showConvList ? "rotate-180" : ""
-                      }`}
+                      className={`w-4 h-4 text-accent/40 shrink-0 transition-transform duration-300 ${showConvList ? "rotate-180" : ""
+                        }`}
                     >
                       <polyline points="6 9 12 15 18 9" />
                     </svg>
@@ -306,6 +332,34 @@ export default function Settings() {
                       Local persistent storage is active
                     </p>
                     <StorageBar usedKB={storageKB} totalKB={STORAGE_LIMIT_KB} />
+                  </div>
+                </div>
+                <div className="flex items-center justify-center font-bold w-full px-2">
+                  <div className="flex flex-row rounded-full overflow-hidden border-2 border-white w-auto">
+                    {isAdmin && 
+                    <button
+                      onClick={() => router.push("/admin")}
+                      className="group relative overflow-hidden cursor-pointer text-white px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-center transition-all duration-500 ease-in-out hover:text-accent"
+                    >
+                      <div className="absolute inset-y-0 left-0 w-0 bg-white transition-all duration-500 ease-in-out group-hover:w-full" />
+                      <span className="flex items-center gap-2 relative z-10 text-xs sm:text-base whitespace-nowrap">
+                        <HugeiconsIcon icon={ArrowLeft01Icon} size={18} strokeWidth={2} />
+                        <HugeiconsIcon icon={UserAccountIcon} size={18} strokeWidth={2} />
+                        Admin
+                      </span>
+                    </button>
+                        }
+                    {isAdmin && <div className="w-0.5 bg-white shrink-0" />}
+                    <button
+                      onClick={disconnect}
+                      className="group relative overflow-hidden cursor-pointer text-white px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-center transition-all duration-500 ease-in-out hover:text-accent"
+                    >
+                      <div className="absolute inset-y-0 right-0 w-0 bg-white transition-all duration-500 ease-in-out group-hover:w-full" />
+                      <span className="flex items-center gap-2 relative z-10 text-xs sm:text-base whitespace-nowrap">
+                        Disconnect
+                        <HugeiconsIcon icon={Logout01Icon} size={18} strokeWidth={2} />
+                      </span>
+                    </button>
                   </div>
                 </div>
               </>

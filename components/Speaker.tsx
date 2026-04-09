@@ -1,19 +1,15 @@
 "use client";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { VolumeHighIcon } from "@hugeicons/core-free-icons";
-import { useToast } from "@/components/Toast";
+import { toast } from "sonner";
 
 import { useState } from "react";
 
 export function SpeakButton({ content }: { content: string }) {
   const [speaking, setSpeaking] = useState(false);
-  const { showToast } = useToast();
   const handleSpeak = () => {
     if (!window.speechSynthesis) {
-      showToast({
-        type: "error",
-        message: "TTS not supported",
-      });
+      toast.error("TTS not supported");
       return;
     }
     if (speaking) {
@@ -35,7 +31,7 @@ export function SpeakButton({ content }: { content: string }) {
       }
 
       setSpeaking(false);
-      showToast({ type: "error", message: "Speech failed" });
+      toast.error("Speech failed");
     };
 
     window.speechSynthesis.speak(utterance);

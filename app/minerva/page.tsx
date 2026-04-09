@@ -14,6 +14,7 @@ import {
   Cancel01Icon,
   ArrowLeft01Icon,
   CheckmarkCircle01Icon,
+  Delete02Icon,
 } from "@hugeicons/core-free-icons";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -22,7 +23,6 @@ import { toast } from "sonner";
 import { useStore } from "../store/useStore";
 import { getBaseUrl } from "../connect/page";
 import { formatMessageTime, getAuthHeaders } from "@/lib/utils";
-import { useToast } from "@/components/Toast";
 import { SpeakButton } from "@/components/Speaker";
 import FlowerLoader from "@/components/Flower";
 
@@ -136,7 +136,7 @@ export default function Minerva() {
     const existing = storeState.conversations.find((c) => c.id === id);
     if (existing && existing.messages && existing.messages.length > 0) {
       setCurrentId(id);
-      setSidebarOpen(false);
+      if (window.innerWidth < 768) setSidebarOpen(false);
       return;
     }
 
@@ -158,7 +158,7 @@ export default function Minerva() {
     } finally {
       loadingRef.current = false;
       setIsLoadingMessages(false);
-      setSidebarOpen(false);
+      if (window.innerWidth < 768) setSidebarOpen(false);
     }
   };
   const handleCreateNew = async () => {
@@ -190,6 +190,45 @@ export default function Minerva() {
       toast.error("Failed to create chat");
     }
     setIsCreatingConversation(false);
+  };
+  const handleDeleteConversation = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+
+    toast.info("Want to delete conversation?", {
+      action: {
+        label: "Yes",
+        onClick: async () => {
+          try {
+            const res = await fetch(`${getBaseUrl()}/chat/conversations/delete`, {
+              method: "POST",
+              headers: {
+                ...getAuthHeaders(),
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ id }),
+            });
+
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message);
+
+            const updatedConversations = conversations.filter((c) => c.id !== id);
+            setConversations(updatedConversations);
+
+            if (currentId === id) {
+              if (updatedConversations.length > 0) {
+                loadChat(updatedConversations[0].id);
+              } else {
+                setCurrentId("");
+                setMessages("", []);
+              }
+            }
+            toast.success("Conversation deleted");
+          } catch {
+            toast.error("Failed to delete chat");
+          }
+        },
+      },
+    });
   };
   const startRecording = () => {
     const SpeechRecognition =
@@ -296,9 +335,9 @@ export default function Minerva() {
           const storeCurrentId = useStore.getState().currentId;
           const idToLoad =
             storeCurrentId &&
-            fetchedConversations.find(
-              (c: { id: string }) => c.id === storeCurrentId,
-            )
+              fetchedConversations.find(
+                (c: { id: string }) => c.id === storeCurrentId,
+              )
               ? storeCurrentId
               : fetchedConversations[0].id;
 
@@ -342,6 +381,12 @@ export default function Minerva() {
     });
   }, [messages]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth >= 768) {
+      setSidebarOpen(true);
+    }
+  }, []);
+
   const hasConversations = conversations.length > 0;
   const hasMessages = messages.length > 0;
   const isAppLoading = !hydrated && isLoading;
@@ -365,23 +410,24 @@ export default function Minerva() {
 
   return (
     <div className="flex h-screen bg-linear-to-b from-gray-50 to-gray-100">
-      <button
-        onClick={() => setSidebarOpen(true)}
-        className="fixed top-2 left-2 z-50 p-2 rounded-xl bg-accent text-white cursor-pointer md:hidden"
-      >
-        <HugeiconsIcon icon={Clock02Icon} size={20} strokeWidth={2} />
-      </button>
+      {!sidebarOpen && (
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="fixed top-2 left-2 z-50 p-2 rounded-2xl bg-accent text-white cursor-pointer"
+        >
+          <HugeiconsIcon icon={Clock02Icon} size={20} strokeWidth={2} />
+        </button>
+      )}
 
       <div
         onClick={() => setSidebarOpen(false)}
-        className={`fixed inset-0 bg-white/30 backdrop-blur-xs z-40 transition-opacity duration-300 md:hidden ${
-          sidebarOpen ? "opacity-100 visible" : "opacity-0 invisible"
-        }`}
+        className={`fixed inset-0 bg-white/30 backdrop-blur-xs z-40 transition-opacity duration-300 md:hidden ${sidebarOpen ? "opacity-100 visible" : "opacity-0 invisible"
+          }`}
       />
 
       <aside
-        className={`fixed md:relative top-0 left-0 h-full w-72 bg-white sm:border-r border-0 border-r-gray-200 sm:rounded-none rounded-r-4xl flex flex-col z-50 transition-transform duration-500 ease-out
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+        className={`fixed md:relative top-0 left-0 h-full bg-white border border-gray-300 sm:rounded-none rounded-r-4xl flex flex-col z-50 transition-all duration-500 ease-out overflow-hidden
+        ${sidebarOpen ? "translate-x-0 w-70 sm:w-80 opacity-100" : "-translate-x-full w-0 opacity-0 md:translate-x-0"}`}
       >
         <div className="flex items-center justify-between px-4 py-3">
           <span className="sm:text-3xl text-2xl text-gray-700">
@@ -391,14 +437,14 @@ export default function Minerva() {
           {sidebarOpen && (
             <button
               onClick={() => setSidebarOpen(false)}
-              className="p-2 bg-accent text-white hover:shadow-md hover:scale-110 transition-all duration-200 rounded-xl cursor-pointer"
+              className="p-2 bg-accent text-white transition-all duration-200 rounded-xl cursor-pointer"
             >
               <HugeiconsIcon icon={ArrowLeft01Icon} size={16} strokeWidth={2} />
             </button>
           )}
           <button
             onClick={() => setShowTitleInput(!showTitleInput)}
-            className="p-2 bg-accent text-white hover:shadow-md hover:scale-110 transition-all duration-200 rounded-xl cursor-pointer"
+            className="p-2 bg-accent text-white transition-all duration-200 rounded-2xl cursor-pointer"
           >
             <HugeiconsIcon icon={Add01Icon} size={16} strokeWidth={2} />
           </button>
@@ -455,21 +501,31 @@ export default function Minerva() {
           </div>
         )}
 
-        <div className="overflow-y-auto flex-1 p-2">
+        <div className="overflow-y-auto flex-1 mr-px no-scrollbar">
           {hasConversations ? (
             conversations.map((c) => (
-              <button
+              <div
                 key={c.id}
                 onClick={() => loadChat(c.id)}
-                className={`w-full text-left px-4 py-3 font-bold mb-2 cursor-pointer rounded-2xl flex items-center gap-2 text-sm ${
-                  currentId === c.id
+                className={`group w-full text-left px-4 py-3 font-bold mb-px cursor-pointer flex items-center justify-between text-sm transition-colors ${currentId === c.id
                     ? "bg-accent text-white"
                     : "bg-white hover:bg-accent/15 text-accent"
-                }`}
+                  }`}
               >
-                <HugeiconsIcon icon={Clock02Icon} size={14} strokeWidth={2} />
-                {c.title}
-              </button>
+                <div className="flex items-center gap-2 truncate">
+                  <HugeiconsIcon icon={Clock02Icon} size={20} strokeWidth={2} />
+                  <span className="truncate text-md">{c.title}</span>
+                </div>
+                <button
+                  onClick={(e) => handleDeleteConversation(e, c.id)}
+                  className={`p-1.5 rounded-lg cursor-pointer transition-all duration-200 ${currentId === c.id
+                      ? "text-white/60 hover:text-white hover:bg-white/10"
+                      : "text-accent/40 hover:text-rose-500 hover:bg-rose-500/10 opacity-0 group-hover:opacity-100"
+                    }`}
+                >
+                  <HugeiconsIcon icon={Delete02Icon} size={14} strokeWidth={2} />
+                </button>
+              </div>
             ))
           ) : (
             <div className="w-full border-t text-left px-7 py-2 pt-4 flex items-center gap-2 text-sm text-gray-400">
@@ -544,29 +600,29 @@ export default function Minerva() {
             <>
               {!hasMessages && (
                 <div className="flex sm:flex-row flex-col h-full items-center justify-center">
-                      <svg viewBox="0 0 500 500" className="sm:w-40 w-30 h-30 sm:h-40">
-                <defs>
-                  <ellipse
-                    id="petal16"
-                    cx="340"
-                    cy="250"
-                    rx="90"
-                    ry="28"
-                    fill="none"
-                    stroke="#685AFF"
-                    strokeWidth="8"
-                  />
-                </defs>
-                <g>
-                  {[...Array(16)].map((_, i) => (
-                    <use
-                      key={i}
-                      href="#petal16"
-                      transform={`rotate(${i * 22.5} 250 250)`}
-                    />
-                  ))}
-                </g>
-              </svg>
+                  <svg viewBox="0 0 500 500" className="sm:w-40 w-30 h-30 sm:h-40">
+                    <defs>
+                      <ellipse
+                        id="petal16"
+                        cx="340"
+                        cy="250"
+                        rx="90"
+                        ry="28"
+                        fill="none"
+                        stroke="#685AFF"
+                        strokeWidth="8"
+                      />
+                    </defs>
+                    <g>
+                      {[...Array(16)].map((_, i) => (
+                        <use
+                          key={i}
+                          href="#petal16"
+                          transform={`rotate(${i * 22.5} 250 250)`}
+                        />
+                      ))}
+                    </g>
+                  </svg>
                   <div className="flex flex-col items-center">
                     <p className="sm:text-7xl text-3xl text-center text-accent">
                       Minerva
@@ -585,11 +641,10 @@ export default function Minerva() {
                       }}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`flex items-start ${
-                        msg.role === "user"
+                      className={`flex items-start ${msg.role === "user"
                           ? "justify-end"
                           : "justify-start sm:flex-row flex-col"
-                      }`}
+                        }`}
                     >
                       {msg.role === "assistant" && (
                         <svg viewBox="0 0 500 500" className="w-10 h-10">
@@ -623,7 +678,7 @@ export default function Minerva() {
                           <div
                             className={
                               msg.role === "user"
-                                ? "rounded-2xl text-sm bg-accent/20 text-accent font-bold px-4 py-3 shadow-inner"
+                                ? "rounded-3xl rounded-tr-none text-sm text-white bg-accent font-bold px-5 py-2"
                                 : "text-sm sm:mt-5 mt-0 sm:border-t sm:border-gray-200 text-black p-2.5 prose prose-sm max-w-full prose-headings:text-black prose-headings:font-bold prose-headings:mt-3 prose-headings:mb-1 prose-p:text-black prose-p:my-1 prose-li:text-black prose-li:my-0 prose-ul:my-1 prose-strong:text-black prose-code:text-accent prose-table:text-black prose-th:bg-accent/10 prose-th:text-accent prose-td:border prose-td:border-gray-200 prose-th:border prose-th:border-gray-200 prose-hr:border-gray-200"
                             }
                           >
@@ -700,11 +755,10 @@ export default function Minerva() {
                   });
                   setActiveMessageIndex(i);
                 }}
-                className={`block w-10 h-1 rounded-full transition-all cursor-pointer duration-200 ${
-                  activeMessageIndex === i
+                className={`block w-10 h-1 rounded-full transition-all cursor-pointer duration-200 ${activeMessageIndex === i
                     ? "bg-accent"
                     : "bg-accent/25 hover:bg-accent/50"
-                }`}
+                  }`}
               />
             ))}
           </div>
@@ -717,11 +771,10 @@ export default function Minerva() {
             <button
               type="button"
               onClick={startRecording}
-              className={`p-3 rounded-full cursor-pointer ${
-                isListening
+              className={`p-3 rounded-full cursor-pointer ${isListening
                   ? "bg-accent text-white shadow-md scale-105"
                   : "text-accent bg-accent/15 shadow-inner"
-              }`}
+                }`}
             >
               <HugeiconsIcon icon={Mic01Icon} size={16} strokeWidth={2} />
             </button>
@@ -730,13 +783,13 @@ export default function Minerva() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={"Ask Anything..."}
-              className={`flex-1 border rounded-xl px-4 py-2 text-sm outline-none ring-0 placeholder:text-black/50 text-black font-bold`}
+              className={`flex-1 border rounded-4xl px-4 py-2 text-sm outline-none ring-0 placeholder:text-black/50 text-black font-bold`}
             />
 
             <button
               type="submit"
               disabled={!input}
-              className={`p-3 rounded-[16px] ${input ? "cursor-pointer bg-accent text-white shadow-md hover:scale-105 active:scale-95" : "cursor-not-allowed text-accent"} `}
+              className={`p-3 rounded-4xl ${input ? "cursor-pointer bg-accent text-white active:scale-95" : "cursor-not-allowed text-accent"} `}
             >
               {isThinking ? (
                 <HugeiconsIcon
@@ -794,15 +847,11 @@ const TypewriterMessage = ({
 
 export const CopyButton = ({ text }: { text: string }) => {
   const [copied, setCopied] = useState(false);
-  const { showToast } = useToast();
 
   const copy = async () => {
     await navigator.clipboard.writeText(text);
     setCopied(true);
-    showToast({
-      type: "success",
-      message: "Copied!",
-    });
+    toast.success("Copied!");
     setTimeout(() => setCopied(false), 2000);
   };
 

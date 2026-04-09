@@ -18,12 +18,11 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const isHome = pathname === "/";
-  const isSettings = pathname === "/settings";
 
   const navItems = [
     { name: "Home", icon: Home04Icon, path: "/" },
-    { name: "Settings", icon: Settings01Icon, path: "/settings" },
     { name: "Minerva", icon: Brain01Icon, path: "/minerva" },
+    { name: "Settings", icon: Settings01Icon, path: "/settings" },
   ];
 
   useEffect(() => {
@@ -37,11 +36,9 @@ export default function Navbar() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className={`fixed top-2 right-2 z-50 p-2 rounded-xl transition cursor-pointer ${
-          isHome || isSettings ? "bg-white/20 text-white" : "bg-accent/20 text-accent"
-        }`}
+        className="fixed top-2 right-2 z-50 p-2 rounded-2xl bg-accent text-white transition cursor-pointer"
       >
-        <HugeiconsIcon icon={Menu01Icon} size={22} strokeWidth={2} />
+        <HugeiconsIcon icon={Menu01Icon} size={20} strokeWidth={2} />
       </button>
       <div
         onClick={() => setOpen(false)}
@@ -50,7 +47,7 @@ export default function Navbar() {
         }`}
       />
       <aside
-        className={`fixed top-0 right-0 h-screen w-65 z-50 rounded-l-4xl
+        className={`fixed top-0 right-0 h-screen w-65 z-50 rounded-l-4xl sm:rounded-l-none sm:border-0 border border-gray-300
         transition-transform duration-500 ease-out
         ${open ? "translate-x-0" : "translate-x-full"}
         bg-white text-accent shadow-2xl`}
