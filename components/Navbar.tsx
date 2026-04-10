@@ -8,6 +8,7 @@ import {
   Menu01Icon,
   Cancel01Icon,
   Brain01Icon,
+  Book01Icon,
 } from "@hugeicons/core-free-icons";
 import { useEffect, useState } from "react";
 
@@ -22,6 +23,7 @@ export default function Navbar() {
   const navItems = [
     { name: "Home", icon: Home04Icon, path: "/" },
     { name: "Minerva", icon: Brain01Icon, path: "/minerva" },
+    { name: "Documentation", icon: Book01Icon, path: "/docs" },
     { name: "Settings", icon: Settings01Icon, path: "/settings" },
   ];
 

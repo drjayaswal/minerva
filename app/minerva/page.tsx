@@ -508,8 +508,8 @@ export default function Minerva() {
                 key={c.id}
                 onClick={() => loadChat(c.id)}
                 className={`group w-full text-left px-4 py-3 font-bold mb-px cursor-pointer flex items-center justify-between text-sm transition-colors ${currentId === c.id
-                    ? "bg-accent text-white"
-                    : "bg-white hover:bg-accent/15 text-accent"
+                  ? "bg-accent text-white"
+                  : "bg-white hover:bg-accent/15 text-accent"
                   }`}
               >
                 <div className="flex items-center gap-2 truncate">
@@ -519,8 +519,8 @@ export default function Minerva() {
                 <button
                   onClick={(e) => handleDeleteConversation(e, c.id)}
                   className={`p-1.5 rounded-lg cursor-pointer transition-all duration-200 ${currentId === c.id
-                      ? "text-white/60 hover:text-white hover:bg-white/10"
-                      : "text-accent/40 hover:text-rose-500 hover:bg-rose-500/10 opacity-0 group-hover:opacity-100"
+                    ? "text-white/60 hover:text-white hover:bg-white/10"
+                    : "text-accent/40 hover:text-rose-500 hover:bg-rose-500/10 opacity-0 group-hover:opacity-100"
                     }`}
                 >
                   <HugeiconsIcon icon={Delete02Icon} size={14} strokeWidth={2} />
@@ -642,8 +642,8 @@ export default function Minerva() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       className={`flex items-start ${msg.role === "user"
-                          ? "justify-end"
-                          : "justify-start sm:flex-row flex-col"
+                        ? "justify-end"
+                        : "justify-start sm:flex-row flex-col"
                         }`}
                     >
                       {msg.role === "assistant" && (
@@ -756,8 +756,8 @@ export default function Minerva() {
                   setActiveMessageIndex(i);
                 }}
                 className={`block w-10 h-1 rounded-full transition-all cursor-pointer duration-200 ${activeMessageIndex === i
-                    ? "bg-accent"
-                    : "bg-accent/25 hover:bg-accent/50"
+                  ? "bg-accent"
+                  : "bg-accent/25 hover:bg-accent/50"
                   }`}
               />
             ))}
@@ -772,8 +772,8 @@ export default function Minerva() {
               type="button"
               onClick={startRecording}
               className={`p-3 rounded-full cursor-pointer ${isListening
-                  ? "bg-accent text-white shadow-md scale-105"
-                  : "text-accent bg-accent/15 shadow-inner"
+                ? "bg-accent text-white shadow-md scale-105"
+                : "text-accent bg-accent/15 shadow-inner"
                 }`}
             >
               <HugeiconsIcon icon={Mic01Icon} size={16} strokeWidth={2} />

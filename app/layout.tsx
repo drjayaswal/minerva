@@ -5,8 +5,7 @@ import Navbar from "@/components/Navbar";
 import { Toaster } from "sonner";
 import { AlertCircle, CheckCircle, InformationCircleIcon, Unlink04Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-
-/* ---------------- FONTS ---------------- */
+import { Connectivity } from "@/components/Connectivity";
 
 const raleway = Raleway({
   subsets: ["latin"],
@@ -19,8 +18,6 @@ const geistMono = Geist_Mono({
   display: "swap",
   variable: "--font-geist-mono",
 });
-
-/* ---------------- METADATA ---------------- */
 
 export const metadata: Metadata = {
   metadataBase: new URL("http://localhost:3000"),
@@ -43,7 +40,6 @@ export const metadata: Metadata = {
   },
 };
 
-/* ---------------- LAYOUT ---------------- */
 
 export default function RootLayout({
   children,
@@ -57,6 +53,7 @@ export default function RootLayout({
       className={`${raleway.variable} ${geistMono.variable}`}
     >
       <body className="antialiased min-h-screen flex flex-col bg-accent text-white selection:bg-white selection:text-accent">
+        <Connectivity>
         <Navbar />
         <Toaster
           position="bottom-right"
@@ -89,6 +86,7 @@ export default function RootLayout({
           }}
         />
         <main className="flex-1 w-full overflow-hidden">{children}</main>
+        </Connectivity>
       </body>
     </html>
   );

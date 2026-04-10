@@ -4,7 +4,6 @@ import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, ElementType } from "react";
-import { toast } from "sonner";
 
 function useReveal(threshold = 0.15) {
   const ref = useRef<any>(null);
@@ -103,12 +102,12 @@ const stats = [
 ];
 
 const capabilities = [
-  { icon: "aê",  title: "Multilingual", desc: "Native fluency in 8+ languages including English, German, French, Italian, and Hindi." },
+  { icon: "aê", title: "Multilingual", desc: "Native fluency in 8+ languages including English, German, French, Italian, and Hindi." },
   { icon: "⟨/⟩", title: "Tool Use", desc: "Zero-shot function calling for real-time API orchestration and search engine integration." },
-  { icon: "∑",  title: "GQA Attention", desc: "Grouped-Query Attention for high-throughput, low-latency inference at scale." },
-  { icon: "◎",  title: "Safety Aligned", desc: "Tuned with Llama Guard 3 and CyberSec Eval 2 for enterprise-grade deployments." },
-  { icon: "⇌",  title: "FP8 Native", desc: "Optimized for 8-bit quantization with zero performance degradation on H100s." },
-  { icon: "⬚",  title: "128K Context", desc: "Full 'Needle In A Haystack' retrieval accuracy across the entire 128,000 token range." },
+  { icon: "∑", title: "GQA Attention", desc: "Grouped-Query Attention for high-throughput, low-latency inference at scale." },
+  { icon: "◎", title: "Safety Aligned", desc: "Tuned with Llama Guard 3 and CyberSec Eval 2 for enterprise-grade deployments." },
+  { icon: "⇌", title: "FP8 Native", desc: "Optimized for 8-bit quantization with zero performance degradation on H100s." },
+  { icon: "⬚", title: "128K Context", desc: "Full 'Needle In A Haystack' retrieval accuracy across the entire 128,000 token range." },
 ];
 
 const comparisons = [
@@ -119,7 +118,7 @@ const comparisons = [
 ];
 export default function HomePage() {
   const router = useRouter();
-  
+
   return (
     <div className="bg-accent text-white overflow-x-hidden">
       <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 text-center">
@@ -162,7 +161,7 @@ export default function HomePage() {
 
       <section className="py-20 px-4 sm:px-8 max-w-6xl mx-auto">
         <Reveal direction="left" className="mb-14">
-          <h2 className="text-3xl sm:text-5xl font-medium tracking-tight">How Minerva is performing</h2>
+          <h2 className="text-3xl sm:text-5xl font-medium tracking-tight">How Minerva performs?</h2>
         </Reveal>
         <div className="space-y-6">
           {benchmarks.map((b, i) => (
@@ -173,7 +172,7 @@ export default function HomePage() {
 
       <section className="py-20 px-4 sm:px-8 max-w-6xl mx-auto">
         <Reveal direction="up" className="text-left mb-14">
-          <h2 className="text-3xl sm:text-5xl font-medium tracking-tight">What Minerva can do</h2>
+          <h2 className="text-3xl sm:text-5xl font-medium tracking-tight">What Minerva can do?</h2>
         </Reveal>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/10 rounded-none overflow-hidden border border-white/10">
           {capabilities.map((c, i) => (
@@ -192,7 +191,7 @@ export default function HomePage() {
 
       <section className="py-20 px-4 sm:px-8 max-w-6xl mx-auto">
         <Reveal direction="right" className="mb-14">
-          <h2 className="text-3xl sm:text-5xl font-medium tracking-tight">How Minerva stacks up</h2>
+          <h2 className="text-3xl sm:text-5xl font-medium tracking-tight">How Minerva stacks up?</h2>
         </Reveal>
         <Reveal delay={100} direction="up">
           <div className="overflow-hidden">
@@ -284,15 +283,15 @@ export default function HomePage() {
 
       <section className="py-28 px-4 text-center">
         <Reveal direction="up">
-          <h2 className="text-4xl sm:text-6xl font-medium tracking-tight mb-10">Start using Minerva.</h2>
+          <h2 className="text-4xl sm:text-6xl font-medium tracking-tight mb-10">Start using Minerva</h2>
           <button
             onClick={() => router.push("/minerva")}
-            className="group relative overflow-hidden cursor-pointer border-2 border-white rounded-full px-10 py-4 text-sm font-bold tracking-wide hover:text-accent transition-colors duration-500"
+            className="group relative overflow-hidden cursor-pointer border-2 border-white rounded-full pr-6 pl-8 py-3 text-xl font-bold tracking-wide hover:text-accent transition-colors duration-500"
           >
             <div className="absolute inset-0 w-0 bg-white transition-all duration-500 ease-in-out group-hover:w-full" />
             <span className="relative z-10 flex items-center gap-2">
-              Open Minerva
-              <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={2} />
+              Minerva
+              <HugeiconsIcon icon={ArrowRight01Icon} size={20} strokeWidth={2} />
             </span>
           </button>
         </Reveal>

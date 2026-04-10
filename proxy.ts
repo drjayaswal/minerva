@@ -1,4 +1,3 @@
-// proxy.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -11,12 +10,10 @@ export function proxy(request: NextRequest) {
     pathname.startsWith('/minerva') || 
     pathname.startsWith('/settings');
 
-  // Logic: Block unauthenticated users
   if (isProtectedPath && !isLoggedIn) {
     return NextResponse.redirect(new URL('/connect', request.url));
   }
 
-  // Logic: Block authenticated users from login page
   if (pathname === '/connect' && isLoggedIn) {
     return NextResponse.redirect(new URL('/', request.url));
   }
